@@ -1,0 +1,35 @@
+@page "/"
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
+@inject NavigationManager NavigationManager
+<h3 class="text-4xl font-bold py-4">Welcome to Blazor Michi</h3>
+
+@if (currentRoom is null)
+{
+    <input @bind="playerName" class="rounded-md my-2 p-2 text-black" placeholder="Your name"/>
+    <input @bind="currentRoomName" class="rounded-md my-2 p-2 text-black" placeholder="Room Name"/>
+    <button @onclick="CreateRoom" class="rounded-md my-2 bg-blue-400 text-white border-solid">
+        Create Room
+    </button>
+
+    @if (rooms.Count > 0)
+    {
+        <h3 class="text-2xl font-bold py-2">Or join a roowm below</h3>
+        <ul>
+            @foreach (var room in rooms)
+            {
+                <li>
+                    <button @onclick="() => JoinRoom(room.RoomId)"
+                            class="rounded-md bg-blue-400 text-white py-2">
+                        @room.RoomName
+                    </button>
+                </li>
+            }
+        </ul>
+    }
+}
+else
+{
+    <CascadingValue Value="_hubConnection">
+        <Room CurrentRoom="currentRoom"/>
+    </CascadingValue>
+}

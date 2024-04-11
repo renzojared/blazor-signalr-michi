@@ -1,0 +1,63 @@
+@if (CurrentRoom is not null)
+{
+    <h3 class="text-2xl font-bold py-2">@CurrentRoom.RoomName</h3>
+    if (CurrentRoom.Players.Count < 2)
+    {
+        <h4>Waiting for another player to join...</h4>
+    }
+
+    if (!CurrentRoom.Game.GameStarted && CurrentRoom.Game.PlayerXId != MyPlayerId && CurrentRoom.Players.Count == 2)
+    {
+        <h4>Waiting for the other player to start the game...</h4>
+    }
+
+    if (CurrentRoom.Game.GameOver && !CurrentRoom.Game.IsDraw)
+    {
+        <h4>Game Over! Winner: @CurrentRoom.Game.Winner</h4>
+    }
+    
+    if (CurrentRoom.Game.GameOver && CurrentRoom.Game.IsDraw)
+    {
+        <h4>Game Over! Draw!</h4>
+    }
+    
+    if ((!CurrentRoom.Game.GameStarted || CurrentRoom.Game.GameOver) && CurrentRoom.Game.PlayerXId == MyPlayerId && CurrentRoom.Players.Count == 2)
+    {
+        <button @onclick="StartGame" class="m-2 rounded-md bg-blue-400 text-black">
+            Start Game
+        </button>
+    }
+
+    if (CurrentRoom.Game.GameStarted)
+    {
+        if (!CurrentRoom.Game.GameOver)
+        {
+            <h4>It's @CurrentRoom.Game.CurrentPlayerSymbol 's Turn</h4>
+        }
+        <br/>
+        <span> Current playing: @CurrentRoom.Players[0].Name (X), @CurrentRoom.Players[1].Name (O)</span>
+        
+        <div class="flex justify-center items-center p-4">
+            <table class="michi-css">
+                @for (int row = 0; row < 3; row++)
+                {
+                <tr>
+                    @for (int col = 0; col < 3; col++)
+                    {
+                    var r = row;
+                    var c = col;
+                    <td @onclick="() => MakeMove(r, c)">
+                        @CurrentRoom.Game.Board[r][c]
+                    </td>
+                    }
+                </tr>
+                }
+            </table>
+        </div>
+
+        @if (!IsMyTurn() && !CurrentRoom.Game.GameOver)
+        {
+            <p>Please wait for the other player to make a move.</p>
+        }
+    }
+}
